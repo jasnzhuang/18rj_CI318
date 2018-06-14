@@ -1,0 +1,18 @@
+<?php
+class Comments extends CI_Controller {
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    public function index()
+    {
+	    $data['comments'] = $this->comments_model->get_comments(1);
+	    $data['title'] = '评论列表';
+
+	    $this->load->view('templates/header', $data);
+	    $this->load->view('news/index', $data);
+	    $this->load->view('templates/footer');
+    }
+}
