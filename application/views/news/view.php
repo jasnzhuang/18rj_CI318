@@ -1,5 +1,11 @@
-
-<?php
-echo '<h2>'.$news_item['title'].'</h2>';
-echo $news_item['content'];
-?>
+<div>
+	<p><?php echo $news_item['title'] ?></p>
+	<p><?php echo $news_item['content'] ?></p>
+</div>
+<div>
+	<ul>
+		<?php foreach ($comments as $co_items): ?>
+		<li><?php echo $co_items['content']; ?></li>
+		<?php endforeach; ?>
+	</ul>
+</div>

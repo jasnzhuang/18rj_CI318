@@ -17,13 +17,13 @@ class Users extends CI_Controller{
         } else {
             // Encrypt password
             $enc_password = md5($this->input->post('password'));
-
             $this->user_model->register($enc_password);
-
             // Set message
             $this->session->set_flashdata('user_registered', 'You are now registered and can log in');
 
-            redirect('news');
+                $this->load->view('templates/header', $data);
+                $this->load->view('users/reg_ok');
+                $this->load->view('templates/footer');
         }
     }
 
@@ -39,33 +39,26 @@ class Users extends CI_Controller{
             $this->load->view('users/login', $data);
             $this->load->view('templates/footer');
         } else {
-
-            // Get username
             $username = $this->input->post('username');
-            // Get and encrypt the password
             $password = md5($this->input->post('password'));
-
-            // Login user
+            // Login user  
             $user_id = $this->user_model->login($username, $password);
-
             if($user_id){
+                $user_data=$this->user_model->get_users($user_id);
+                $user_data['logged_in']=true;
                 // Create session
-                $user_data = array(
-                    'user_id' => $user_id,
-                    'username' => $username,
-                    'logged_in' => true
-                );
-
+                // $user_data = array(
+                //     'user_id' => $user_id,
+                //     'username' => $username,
+                //     'logged_in' => true
+                // );
                 $this->session->set_userdata($user_data);
-
-                // Set message
                 $this->session->set_flashdata('user_loggedin', 'You are now logged in');
-
-                redirect('news');
+                $this->load->view('templates/header', $data);
+                $this->load->view('users/log_ok',$user_data);
+                $this->load->view('templates/footer');
             } else {
-                // Set message
                 $this->session->set_flashdata('login_failed', 'Login is invalid');
-
                 redirect('users/login');
             }
         }
@@ -77,8 +70,6 @@ class Users extends CI_Controller{
         $this->session->unset_userdata('logged_in');
         $this->session->unset_userdata('user_id');
         $this->session->unset_userdata('username');
-
-        // Set message
         $this->session->set_flashdata('user_loggedout', 'You are now logged out');
 
         redirect('users/login');
@@ -93,7 +84,7 @@ class Users extends CI_Controller{
             return false;
         }
     }
-
+    
     // Check if email exists
     public function check_email_exists($email){
         $this->form_validation->set_message('check_email_exists', 'That email is taken. Please choose a different one');
@@ -102,5 +93,20 @@ class Users extends CI_Controller{
         } else {
             return false;
         }
+    }
+
+    public function info($id)
+    {
+        # code...
+    }
+
+    public function list()
+    {
+        $data['users'] = $this->user_model->get_users($id=false);
+        $data['title'] = '用户列表';
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('users/list', $data);
+        $this->load->view('templates/footer');
     }
 }
